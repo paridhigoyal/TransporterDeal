@@ -1,0 +1,13 @@
+<html>
+{% if request.user.is_authenticated and user.is_transporter %}
+        <li><a href="{% url 'account_logout' %}"> logout</a></li>
+
+<form method="post" action="" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{form.as_p}}
+
+    <input type="submit" value="Submit">
+</form>
+
+{% endif %}
+</html>

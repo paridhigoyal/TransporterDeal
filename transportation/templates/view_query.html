@@ -1,0 +1,23 @@
+<html>
+<body>
+
+<table class="table table-striped table-bordered table-sm">
+    <thead class="thead-dark">
+    <tr>
+    <td>Username</td>
+    <td>Customer Request </td>
+    <td>Response</td>
+</tr>
+    </thead>
+
+<tr>
+
+    <td>{{query.username}}</td>
+    <td>{{query.c_request}} </td>
+
+    <td> <a href="{% url 'response-query' query.id %}" > Reply </a></td>
+</tr>
+</table>
+
+</body>
+</html>

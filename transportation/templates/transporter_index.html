@@ -1,0 +1,57 @@
+<html>
+    <title>
+        Home
+    </title>
+
+    {% if request.user.is_authenticated %}
+        <li><a href="{% url 'account_logout' %}"> logout</a></li>
+    {% endif %}
+    <table>
+    {% if request.user.is_anonymous %}
+       <tr><td><a href="{% url 'account_signup' %}"> signup</a></td></tr>
+        <tr><td><a href="{% url 'account_login' %}"> login</a></td></tr>
+    {% endif %}
+<!-- <a href="{% url 'account_logout' %}"> logout</a>-->
+    </table>
+
+    <body> {%if user.is_authenticated%}
+    <b>Welcome to transportation website</b></body></br>
+    {% if user.is_authenticated and user.is_transporter %}
+    <a href="{% url 'add-vehicle' %}" > Add Vehicle </a></br>
+    <a href="{% url 'create-deal' %}" > Create Deal </a></br>
+    {%endif%}
+
+    <a href="{%url 'vehicle-list'  %}">View Vehicle</a></br>
+    <a href="{%url 'deal-list'  %}">View Deals</a></br></br>
+{%endif%}
+<form action="" method="get">
+<!--    <input name="start city" type="text" placeholder="Start City"></br></br>-->
+<!--    <input name="end city" type="text" placeholder="End City"></br></br>-->
+    {% csrf_token %}
+    {{form.as_p}}
+    <input type="submit" value="Search" >
+</form>
+<!--    <form action="" method="get">-->
+<!--    <input name="start date" type="text" placeholder="Start Date"></br></br>-->
+<!--    <input name="end date" type="text" placeholder="End Date"></br></br>-->
+
+<!--    <input type="submit" value="Search" >-->
+<!--    </form>-->
+<table class="table table-striped table-bordered table-sm">
+
+{% for deal in deal_lists %}
+    <tr>
+        <td>{{ deal.deal_id }}</td>
+        <td>{{ deal.start_city}}</td>
+        <td>{{ deal.end_city }}</td>
+
+{%if user.is_authenticated%}
+        <td><a href="{% url 'view-deal' deal.deal_id %}">View</a></td>
+        {%endif%}
+    </tr>
+{% endfor %}
+</table>
+    </body>
+
+</html>
+

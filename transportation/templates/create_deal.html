@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Deal</title>
+</head>
+<body>
+<html>
+<form method="post" action="">
+    {% csrf_token %}
+    {{form.as_p}}
+
+    <input type="submit" value="Confirm Deal">
+    Deal Created
+</form>
+</html>
