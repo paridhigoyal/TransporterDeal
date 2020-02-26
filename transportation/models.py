@@ -12,9 +12,6 @@ class User(AbstractUser):
     phone = models.CharField(max_length=12, default="")
     pin_code = models.CharField(max_length=6, default="")
 
-    # available_permissions = {'add_vehicle': True, 'vehicle_list': True, 'update_vehicle': True,
-    #                          'delete_vehicle': True }
-
     def __str__(self):
         return self.username
 
@@ -26,9 +23,10 @@ class Vehicle(models.Model):
     color = models.CharField(max_length=15)
     man_Year = models.IntegerField()
     capacity = models.IntegerField()
+    unit = models.CharField(max_length=5,default="kgs")
     picture = models.ImageField(null=True, upload_to="gallery")
     document = models.CharField(max_length=100)
-
+    is_available = models.BooleanField(default=True)
     transporter = models.ForeignKey(User, on_delete=models.CASCADE, default="")
 
     def __unicode__(self):
@@ -42,6 +40,7 @@ class Deal(models.Model):
     start_city = models.CharField(max_length=50)
     end_city = models.CharField(max_length=50)
     price = models.IntegerField()
+    unit = models.CharField(max_length=5,default="Rs")
     # transporter = models.ManyToManyField(Profile)
     customer = models.ForeignKey(User, on_delete=models.CASCADE)
     vehicle_id = models.OneToOneField(Vehicle, on_delete=models.CASCADE)

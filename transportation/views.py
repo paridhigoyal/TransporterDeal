@@ -1,12 +1,11 @@
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.shortcuts import render, redirect
 from .models import Vehicle, Deal, QueryRequest, QueryResponse, Rating
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from .forms import VehicleForm, DealForm, SearchForm, QueryRequestForm, QueryResponseForm, RatingForm, \
-    MyCustomSignupForm
-from allauth.account.views import LoginView
+from .forms import VehicleForm, DealForm, SearchForm, QueryRequestForm, QueryResponseForm, RatingForm
 
 
 def index(request):
@@ -39,23 +38,30 @@ def index(request):
 #
 #     return render(request, 'edit_profile.html', {'form': form})
 
-
+@login_required
+@permission_required('transportation.add_vehicle', raise_exception=True)
 def add_vehicle(request):
-    # if request.man_Year
     if request.method == 'POST':
         form = VehicleForm(request.POST, request.FILES)
+        # import pdb;pdb.set_trace()
         if form.is_valid():
-            form.save(request)
-        return HttpResponseRedirect(reverse('vehicle-list'))
+            form.save()
+            return HttpResponseRedirect(reverse('vehicle-list'))
+        else:
+            return render(request, 'add_vehicle.html', {'form': form})
     form = VehicleForm(initial={'transporter': request.user.id})
     return render(request, 'add_vehicle.html', {'form': form})
 
 
+@login_required
+@permission_required('transportation.view_vehicle', raise_exception=True)
 def vehicle_list(request):
     vehicles = Vehicle.objects.all()
     return render(request, 'vehicle_list.html', {'vehicles': vehicles})
 
 
+@login_required
+@permission_required('transportation.change_vehicle', raise_exception=True)
 def update_vehicle(request, id):
     vehicle = Vehicle.objects.get(id=id)
 
@@ -67,6 +73,8 @@ def update_vehicle(request, id):
     return render(request, 'edit_vehicle.html', {'form': form})
 
 
+@login_required
+@permission_required('transportation.delete_vehicle', raise_exception=True)
 def delete_vehicle(request, id):
     vehicle = Vehicle.objects.get(id=id)
     if request.method == 'POST':
@@ -75,28 +83,39 @@ def delete_vehicle(request, id):
     return render(request, 'delete_vehicle.html', {'vehicle': vehicle})
 
 
+@login_required
+@permission_required('transportation.view_deal', raise_exception=True)
 def view_deal(request, deal_id):
     deal = Deal.objects.get(deal_id=deal_id)
     return render(request, 'view_deal.html', {'deal': deal})
 
 
+@login_required
+@permission_required('transportation.add_deal', raise_exception=True)
 def create_deal(request):
     if request.method == 'POST':
         form = DealForm(request.POST)
+        if form.is_valid():
+            form.save()
+        else:
+            return render(request, 'create_deal.html', {'form': form})
         # import pdb;pdb.set_trace()
-        form.save()
         return HttpResponseRedirect(reverse('deal-list'))
     form = DealForm()
     return render(request, 'create_deal.html', {'form': form})
 
 
+@login_required
+@permission_required('transportation.view_deal', raise_exception=True)
 def deal_list(request):
     deals = Deal.objects.all()
     # rating=Rating.objects.all()
-    context ={'deals': deals}
+    context = {'deals': deals}
     return render(request, 'deal_list.html', context)
 
 
+@login_required
+@permission_required('transportation.delete_deal', raise_exception=True)
 def delete_deal(request, deal_id):
     deal = Deal.objects.get(deal_id=deal_id)
     if request.method == 'POST':
@@ -105,6 +124,8 @@ def delete_deal(request, deal_id):
     return render(request, 'delete_vehicle.html', {'deal': deal})
 
 
+@login_required
+@permission_required('transportation.change_deal', raise_exception=True)
 def edit_deal(request, deal_id):
     deal = Deal.objects.get(deal_id=deal_id)
     if request.method == 'POST':
@@ -115,11 +136,14 @@ def edit_deal(request, deal_id):
     return render(request, 'edit_deal.html', {'form': form})
 
 
+@login_required
 def view_image(request, id):
     vehicle = Vehicle.objects.get(id=id)
     return render(request, 'view_image.html', {'vehicle': vehicle})
 
 
+@login_required
+@permission_required('transportation.add_queryrequest', raise_exception=True)
 def ask_query(request, deal_id):
     if request.method == 'POST':
         form = QueryRequestForm(request.POST)
@@ -130,12 +154,16 @@ def ask_query(request, deal_id):
     return render(request, 'ask_query.html', {'form': form})
 
 
+@login_required
+@permission_required('transportation.view_queryrequest', raise_exception=True)
 def view_query(request, deal_id):
     query = QueryRequest.objects.get(deal_id=deal_id)
     # import pdb;pdb.set_trace()
     return render(request, 'view_query.html', {'query': query})
 
 
+@login_required
+@permission_required('transportation.add_queryresponse', raise_exception=True)
 def response_query(request, request_id):
     # import pdb;pdb.set_trace()
     if request.method == 'POST':
@@ -147,11 +175,15 @@ def response_query(request, request_id):
     return render(request, 'response_query.html', context)
 
 
+@login_required
+@permission_required('transportation.view_queryresponse', raise_exception=True)
 def view_response(request, request_id):
     query = QueryResponse.objects.get(request_id=request_id)
     return render(request, 'view_response.html', {'query': query})
 
 
+@login_required
+@permission_required('transportation.add_rating', raise_exception=True)
 def give_rating(request, deal_id):
     # import pdb; pdb.set_trace()
     if request.method == 'POST':
@@ -163,6 +195,8 @@ def give_rating(request, deal_id):
     return render(request, 'give_rating.html', {'form': form})
 
 
+@login_required
+@permission_required('transportation.view_rating', raise_exception=True)
 def view_rating(request, deal_id):
     rating = Rating.objects.get(deal_id=deal_id)
     # import pdb;
