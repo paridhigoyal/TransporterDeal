@@ -56,7 +56,8 @@ def add_vehicle(request):
 @login_required
 @permission_required('transportation.view_vehicle', raise_exception=True)
 def vehicle_list(request):
-    vehicles = Vehicle.objects.all()
+    # vehicles = Vehicle.objects.all()
+    vehicles = Vehicle.objects.filter(transporter_id=request.user.id)
     return render(request, 'vehicle_list.html', {'vehicles': vehicles})
 
 
@@ -93,15 +94,17 @@ def view_deal(request, deal_id):
 @login_required
 @permission_required('transportation.add_deal', raise_exception=True)
 def create_deal(request):
+
+    # vehicle=Vehicle.object.filter(transporter=request.user)
     if request.method == 'POST':
         form = DealForm(request.POST)
         if form.is_valid():
             form.save()
         else:
             return render(request, 'create_deal.html', {'form': form})
-        # import pdb;pdb.set_trace()
         return HttpResponseRedirect(reverse('deal-list'))
-    form = DealForm()
+    form = DealForm(initial={'transporter': request.user.id})
+    form.fields['vehicle_id'].queryset=Vehicle.objects.filter(transporter=request.user)
     return render(request, 'create_deal.html', {'form': form})
 
 
@@ -109,7 +112,6 @@ def create_deal(request):
 @permission_required('transportation.view_deal', raise_exception=True)
 def deal_list(request):
     deals = Deal.objects.all()
-    # rating=Rating.objects.all()
     context = {'deals': deals}
     return render(request, 'deal_list.html', context)
 
@@ -117,7 +119,8 @@ def deal_list(request):
 @login_required
 @permission_required('transportation.delete_deal', raise_exception=True)
 def delete_deal(request, deal_id):
-    deal = Deal.objects.get(deal_id=deal_id)
+    deal = Deal.objects.get(deal_id=deal_id, transporter=request.user)
+    deal.delete()
     if request.method == 'POST':
         deal.delete()
         return redirect('deal-list')
@@ -127,7 +130,7 @@ def delete_deal(request, deal_id):
 @login_required
 @permission_required('transportation.change_deal', raise_exception=True)
 def edit_deal(request, deal_id):
-    deal = Deal.objects.get(deal_id=deal_id)
+    deal = Deal.objects.get(deal_id=deal_id, transporter=request.user)
     if request.method == 'POST':
         form = DealForm(request.POST, instance=deal)
         form.save()
@@ -185,7 +188,6 @@ def view_response(request, request_id):
 @login_required
 @permission_required('transportation.add_rating', raise_exception=True)
 def give_rating(request, deal_id):
-    # import pdb; pdb.set_trace()
     if request.method == 'POST':
         form = RatingForm(request.POST)
 
@@ -199,6 +201,4 @@ def give_rating(request, deal_id):
 @permission_required('transportation.view_rating', raise_exception=True)
 def view_rating(request, deal_id):
     rating = Rating.objects.get(deal_id=deal_id)
-    # import pdb;
-    # pdb.set_trace()
     return render(request, 'view_rating.html', {'rating': rating})

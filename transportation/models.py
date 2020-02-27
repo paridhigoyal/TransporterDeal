@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 
-# Create your models here.
 class User(AbstractUser):
     is_customer = models.BooleanField('customer status', default=False)
     is_transporter = models.BooleanField('transporter status', default=False)
@@ -17,7 +16,6 @@ class User(AbstractUser):
 
 
 class Vehicle(models.Model):
-    # vehicle_id = models.IntegerField(primary_key=True)
     vehicle_type = models.CharField(max_length=50, default='')
     model = models.CharField(max_length=20)
     color = models.CharField(max_length=15)
@@ -30,7 +28,7 @@ class Vehicle(models.Model):
     transporter = models.ForeignKey(User, on_delete=models.CASCADE, default="")
 
     def __unicode__(self):
-        return self.Vehicle.id
+        return self.id
 
 
 class Deal(models.Model):
@@ -40,13 +38,13 @@ class Deal(models.Model):
     start_city = models.CharField(max_length=50)
     end_city = models.CharField(max_length=50)
     price = models.IntegerField()
-    unit = models.CharField(max_length=5,default="Rs")
+    unit = models.CharField(max_length=5, default="Rs")
     # transporter = models.ManyToManyField(Profile)
-    customer = models.ForeignKey(User, on_delete=models.CASCADE)
+    transporter = models.ForeignKey(User, on_delete=models.CASCADE)
     vehicle_id = models.OneToOneField(Vehicle, on_delete=models.CASCADE)
 
     def __unicode__(self):
-        return self.Deal.id
+        return self.id
 
 
 class Rating(models.Model):
@@ -68,7 +66,7 @@ class QueryRequest(models.Model):
     deal = models.ForeignKey(Deal, on_delete=models.CASCADE)
 
     def __unicode__(self):
-        return self.QueryRequest.id
+        return self.id
 
 
 class QueryResponse(models.Model):
@@ -77,4 +75,4 @@ class QueryResponse(models.Model):
     request_id = models.OneToOneField(QueryRequest, on_delete=models.CASCADE)
 
     def __unicode__(self):
-        return self.QueryResponse.id
+        return self.id

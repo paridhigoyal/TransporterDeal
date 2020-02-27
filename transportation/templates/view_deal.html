@@ -1,18 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>View Deals</title>
-</head>
-<body>
-<html>
-<body>
-<body>
-
-<table class="table table-striped table-bordered table-sm">
+{%extends 'base.html'%}
+{%block title%}View Deal{%endblock title%}
+{%block content%}
+<table>
     <thead class="thead-dark">
     <tr>
         <th>Deal ID</th>
+        <th>Transporter</th>
         <th>Start Date</th>
         <th>End Date</th>
         <th>Start City</th>
@@ -27,6 +20,7 @@
 
     <tr>
         <td>{{ deal.deal_id }}</td>
+        <td>{{deal.transporter.username}}</td>
         <td>{{ deal.start_Date }}</td>
         <td>{{ deal.end_date }}</td>
         <td>{{ deal.start_city}}</td>
@@ -35,14 +29,9 @@
         <td>{{ deal.vehicle_id }}</td>
         <td> <a href="{% url 'ask-query' deal.deal_id %}" > Ask Query </a>
         <a href="{% url 'give-rating' deal.deal_id %}" > Rate </a>
-<!--        <a href ='{%url 'view-response' deal</td>-->
-
-
     </tr>
-
     </tbody>
 </table>
+{%endblock%}
 
-</form>
-</body>
-</html>
+

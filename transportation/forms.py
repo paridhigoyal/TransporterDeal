@@ -52,7 +52,6 @@ class MyCustomSignupForm(SignupForm):
         return state
 
     def save(self, request):
-        # import pdb;pdb.set_trace()
         user = super(MyCustomSignupForm, self).save(request)
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
@@ -102,9 +101,12 @@ class VehicleForm(ModelForm):
 
 
 class DealForm(ModelForm):
+    # vehicle=Vehicle.objects.filter(transporter=)
     class Meta:
         model = Deal
         fields = '__all__'
+        widgets = {'transporter': forms.HiddenInput()}
+
 
     def clean(self):
         start_Date = self.cleaned_data['start_Date']
