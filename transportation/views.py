@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -5,14 +6,13 @@ from django.shortcuts import render, redirect
 from .models import Vehicle, Deal, QueryRequest, QueryResponse, Rating
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from .forms import VehicleForm, DealForm, SearchForm, QueryRequestForm, QueryResponseForm, RatingForm
+from .forms import VehicleForm, DealForm, SearchForm, QueryRequestForm, QueryResponseForm, RatingForm, UpdateProfileForm
 
 
 def index(request):
     queryset = request.GET.get('start_city')
     queryset1 = request.GET.get('end_city')
     queryset2 = request.GET.get('start_Date')
-
     queryset3 = request.GET.get('end_date')
     if queryset and queryset1:
         deal_lists = Deal.objects.filter(Q(start_city__icontains=queryset), Q(end_city__icontains=queryset1))
@@ -27,23 +27,22 @@ def index(request):
         form = SearchForm()
         return render(request, 'transporter_index.html', {'form': form})
 
-
-# def update_profile(request,id):
-#     profile = User.objects.get(id=id)
-#     form = MyCustomSignupForm(instance=profile)
-#     if request.method == 'POST':
-#         form = MyCustomSignupForm(request.POST, instance=profile)
-#         form.save()
-#         return HttpResponseRedirect(reverse('home'))
-#
-#     return render(request, 'edit_profile.html', {'form': form})
+@login_required
+def update_profile(request,id):
+    User = get_user_model()
+    user = User.objects.get(id=id)
+    form = UpdateProfileForm(instance=user)
+    if request.method == 'POST':
+        form = UpdateProfileForm(request.POST, instance=user)
+        form.save()
+        return HttpResponseRedirect(reverse('home'))
+    return render(request, 'edit_profile.html', {'form': form})
 
 @login_required
 @permission_required('transportation.add_vehicle', raise_exception=True)
 def add_vehicle(request):
     if request.method == 'POST':
         form = VehicleForm(request.POST, request.FILES)
-        # import pdb;pdb.set_trace()
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse('vehicle-list'))
@@ -56,7 +55,6 @@ def add_vehicle(request):
 @login_required
 @permission_required('transportation.view_vehicle', raise_exception=True)
 def vehicle_list(request):
-    # vehicles = Vehicle.objects.all()
     vehicles = Vehicle.objects.filter(transporter_id=request.user.id)
     return render(request, 'vehicle_list.html', {'vehicles': vehicles})
 
@@ -65,7 +63,6 @@ def vehicle_list(request):
 @permission_required('transportation.change_vehicle', raise_exception=True)
 def update_vehicle(request, id):
     vehicle = Vehicle.objects.get(id=id)
-
     if request.method == 'POST':
         form = VehicleForm(request.POST, instance=vehicle)
         form.save()
@@ -94,8 +91,6 @@ def view_deal(request, deal_id):
 @login_required
 @permission_required('transportation.add_deal', raise_exception=True)
 def create_deal(request):
-
-    # vehicle=Vehicle.object.filter(transporter=request.user)
     if request.method == 'POST':
         form = DealForm(request.POST)
         if form.is_valid():
@@ -151,7 +146,6 @@ def ask_query(request, deal_id):
     if request.method == 'POST':
         form = QueryRequestForm(request.POST)
         form.save()
-        # import pdb;pdb.set_trace()
         return HttpResponseRedirect(reverse('view-query', args=[deal_id]))
     form = QueryRequestForm(initial={'username': request.user.id, 'deal': deal_id})
     return render(request, 'ask_query.html', {'form': form})
@@ -161,14 +155,12 @@ def ask_query(request, deal_id):
 @permission_required('transportation.view_queryrequest', raise_exception=True)
 def view_query(request, deal_id):
     query = QueryRequest.objects.get(deal_id=deal_id)
-    # import pdb;pdb.set_trace()
     return render(request, 'view_query.html', {'query': query})
 
 
 @login_required
 @permission_required('transportation.add_queryresponse', raise_exception=True)
 def response_query(request, request_id):
-    # import pdb;pdb.set_trace()
     if request.method == 'POST':
         form = QueryResponseForm(request.POST)
         form.save()

@@ -6,9 +6,12 @@
     {% if user.is_authenticated and user.is_transporter %}
         <a href="{% url 'add-vehicle' %}" > Add Vehicle </a></br>
         <a href="{% url 'create-deal' %}" > Create Deal </a></br>
+
     {%endif%}
+        <a href ="{% url 'edit-profile' user.id%}">Edit Profile</a></br>
         <a href="{%url 'vehicle-list'  %}">View Vehicle</a></br>
-        <a href="{%url 'deal-list'  %}">View Deals</a></br></br>
+        <a href="{%url 'deal-list' %}">View Deals</a></br></br>
+
     {%endif%}
 <form action="" method="get">
     {% csrf_token %}

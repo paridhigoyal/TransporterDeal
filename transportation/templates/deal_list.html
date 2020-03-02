@@ -32,7 +32,9 @@
         <td><a href="{% url 'edit-deal' deal.deal_id %}">Edit</a></td>
         <td><a href="{% url 'view-query' deal.deal_id %}">View Query</a></td>
         <td><a href="{% url 'view-rating' deal.deal_id %}">View Rating</a></td>
+
         {%endif%}
+<!--     -->
     </tr>
 {% endfor %}
     </tbody>

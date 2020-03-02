@@ -1,9 +1,11 @@
 from django import forms
 from django.contrib.auth.models import Group
-
 from .models import *
 from django.forms import CharField, ModelForm
 from allauth.account.forms import SignupForm
+
+
+# class DateInput():
 
 
 class MyCustomSignupForm(SignupForm):
@@ -45,6 +47,18 @@ class MyCustomSignupForm(SignupForm):
             raise forms.ValidationError('City can only contains alphabets')
         return city
 
+    def clean_first_name(self):
+        first_name = self.cleaned_data['first_name']
+        if not first_name.isalpha():
+            raise forms.ValidationError('First Name can only contains alphabets')
+        return first_name
+
+    def clean_last_name(self):
+        last_name = self.cleaned_data['last_name']
+        if not last_name.isalpha():
+            raise forms.ValidationError('Last Name can only contains alphabets')
+        return last_name
+
     def clean_state(self):
         state = self.cleaned_data['state']
         if not (state.isalpha()):
@@ -75,6 +89,13 @@ class MyCustomSignupForm(SignupForm):
         return user
 
 
+class UpdateProfileForm(ModelForm):
+    class Meta:
+        model=User
+        fields=['first_name','last_name','phone','address','city','state','pin_code']
+
+
+
 class VehicleForm(ModelForm):
     class Meta:
         model = Vehicle
@@ -101,12 +122,15 @@ class VehicleForm(ModelForm):
 
 
 class DealForm(ModelForm):
+    start_Date = forms.DateField(required=False, widget=forms.SelectDateWidget)
+    end_date = forms.DateField(required=False, widget=forms.SelectDateWidget)
     # vehicle=Vehicle.objects.filter(transporter=)
     class Meta:
         model = Deal
         fields = '__all__'
-        widgets = {'transporter': forms.HiddenInput()}
-
+        # end_date = forms.DateField(label='What is your birth date?', widget=forms.SelectDateWidget)
+        widgets = {'transporter': forms.HiddenInput(), 'end_date': forms.SelectDateWidget,
+                   'start_Date': forms.SelectDateWidget}
 
     def clean(self):
         start_Date = self.cleaned_data['start_Date']
@@ -125,12 +149,14 @@ class DealForm(ModelForm):
 class SearchForm(ModelForm):
     start_city = forms.CharField(required=False)
     end_city = forms.CharField(required=False)
-    start_Date = forms.DateField(required=False)
-    end_date = forms.DateField(required=False)
+    start_Date = forms.DateField(required=False,widget = forms.SelectDateWidget)
+    end_date = forms.DateField(required=False,widget = forms.SelectDateWidget)
 
     class Meta:
         model = Deal
         fields = ['start_city', 'end_city', 'start_Date', 'end_date']
+        # widget = {'end_date': forms.SelectDateWidget,
+        #            'start_Date': forms.SelectDateWidget}
 
     def clean(self):
         start_Date = self.cleaned_data['start_Date']

@@ -44,12 +44,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-
+    'guardian',
 
 ]
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
+    'guardian.backends.ObjectPermissionBackend',
     # 'object_permission.backends.ObjectPermBackend',
 )
 ACCOUNT_EMAIL_REQUIRED = True
@@ -145,13 +146,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 LOGIN_REDIRECT_URL = 'home'
 SIGNUP_REDIRECT_URL = 'home'
-# LOGOUT_REDIRECT_URL = '/'
-# LOGIN_REDIRECT_URL = 'home'
-# LOGOUT_REDIRECT_URL = 'home'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'upload')
 MEDIA_URL = '/upload/'
 AUTH_USER_MODEL = "transportation.User"
 USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
-# EMAIL_HOST = 'localhost'
 host = '127.0.0.1'
 ACCOUNT_EMAIL_VERIFICATION = "none"
